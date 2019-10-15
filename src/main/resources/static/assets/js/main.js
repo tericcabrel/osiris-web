@@ -8,6 +8,9 @@ function setConnected(connected) {
 function connect() {
     var socket = new SockJS('/osiris');
     stompClient = Stomp.over(socket);
+
+    stompClient.debug = null;
+
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);

@@ -6,6 +6,8 @@
       layout:decorate="~{layout}">
 <head>
     <title>Register</title>
+
+    <link rel="stylesheet" th:href="@{/assets/vendor/datepicker/tempusdominus-bootstrap-4.css}" />
     <link rel="stylesheet" th:href="@{/assets/css/register.css}">
 </head>
 <body>
@@ -54,8 +56,8 @@
 
                         <div class="form-group mb-4" th:classappend="${#fields.hasErrors('birthDate')}? 'has-error':''">
                             <label for="birth">Birth date:</label>
-                            <input class="form-control" type="birthDate" name="birthDate" id="birth" placeholder="Ex: 5991-01-01"
-                                   th:field="*{birthDate}"/>
+                            <input class="form-control datetimepicker-input" type="text" name="birthDate" id="birth" placeholder="Ex: 5991-01-01"
+                                   th:field="*{birthDate}" data-toggle="datetimepicker" data-target="#birth" data-date-format="YYYY-MM-DD"/>
                             <p class="invalid-feedback" th:each="error : ${#fields.errors('birthDate')}" th:text="${error}">
                                 Validation error
                             </p>
@@ -77,5 +79,16 @@
             </div>
         </div>
     </form>
+
+
+    <script th:src="@{/assets/vendor/datepicker/moment.js}"></script>
+    <script th:src="@{/assets/vendor/datepicker/tempusdominus-bootstrap-4.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#birth').datetimepicker({
+                format: 'YYYY-MM-DD'
+            });
+        });
+    </script>
 </body>
 </html>
