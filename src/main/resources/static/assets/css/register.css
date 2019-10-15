@@ -13,3 +13,8 @@
     color: #dc3545;
     font-size: 12px;
 }
+
+.form-register #finger-img {
+    width: 200px;
+    height: 200px;
+}
