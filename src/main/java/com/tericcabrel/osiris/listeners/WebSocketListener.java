@@ -36,21 +36,37 @@ class WebSocketEventListener {
         Channel channel = Messaging.getChannel();
 
         try {
+            /***********************************************************************************************************/
             channel.queueDeclare(Messaging.Q_APPLET_SELECTED_RESPONSE, false, false, false, null);
-
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
-                System.out.println(" [x] Received '" + content + "'");
+                System.out.println("[Q_APPLET_SELECTED_RESPONSE] Received '" + content + "'");
                 message.setMessage(content);
 
-                if (messagingTemplate != null) {
-                    System.out.println("sent to the client");
-                    messagingTemplate.convertAndSend("/topic/cardInserted", message);
-                } else {
-                    System.out.println("Can't sent to the client");
-                }
+                messagingTemplate.convertAndSend("/topic/cardInserted", message);
             };
             channel.basicConsume(Messaging.Q_APPLET_SELECTED_RESPONSE, true, deliverCallback, consumerTag -> { });
+
+            /***********************************************************************************************************/
+            channel.queueDeclare(Messaging.Q_CARD_REMOVED_RESPONSE, false, false, false, null);
+            DeliverCallback deliverCallback1 = (consumerTag, delivery) -> {
+                String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                System.out.println(" [Q_CARD_REMOVED_RESPONSE] Received '" + content + "'");
+                message.setMessage(content);
+
+                messagingTemplate.convertAndSend("/topic/cardRemoved", message);
+            };
+            channel.basicConsume(Messaging.Q_CARD_REMOVED_RESPONSE, true, deliverCallback1, consumerTag -> { });
+            /***********************************************************************************************************/
+
+            /***********************************************************************************************************/
+            /***********************************************************************************************************/
+            /***********************************************************************************************************/
+            /***********************************************************************************************************/
+            /***********************************************************************************************************/
+            /***********************************************************************************************************/
+            /***********************************************************************************************************/
+            /***********************************************************************************************************/
         } catch (IOException e) {
             e.printStackTrace();
         }

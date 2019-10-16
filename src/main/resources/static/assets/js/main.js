@@ -34,6 +34,18 @@ var CardState = function () {
         localStorage.setItem(this.storageKey, JSON.stringify(data));
     };
 
+    this.reset = function () {
+        var data = {
+            inserted: 0,
+            authenticated: 0,
+            locked: 0,
+            pinRemain: 3
+        };
+
+        localStorage.setItem(this.storageKey, JSON.stringify(data));
+        this.init();
+    };
+
     this.init = function () {
         var storageData = localStorage.getItem(this.storageKey);
         if (storageData === null) {
@@ -47,6 +59,8 @@ var CardState = function () {
         }
     }
 };
+
+var cardState = new CardState();
 
 var getBody = function (data) {
     var body = JSON.parse(data.body);
@@ -62,14 +76,28 @@ var connect = function() {
     stompClient.connect({}, function (frame) {
         console.log('Connected: ' + frame);
 
-        stompClient.subscribe('/topic/greetings', function (greeting) {
-            console.log(JSON.parse(greeting.body).content);
-        });
-
         stompClient.subscribe('/topic/cardInserted', function (data) {
             var message = getBody(data);
             if (message === cardEvent.cardSelected) {
+                cardState.inserted = 1;
+                cardState.save();
+                updateCardState(cardState);
 
+                // TODO add Toast
+            } else {
+                console.error("Card inserted but failed to connect to it!");
+            }
+        });
+
+        stompClient.subscribe('/topic/cardRemoved', function (data) {
+            var message = getBody(data);
+            if (message === cardEvent.cardRemoved) {
+                cardState.reset();
+                updateCardState(cardState);
+
+                // TODO add Toast
+            } else {
+                console.error("Card inserted but failed to connect to it!");
             }
         });
     });
@@ -81,9 +109,9 @@ var disconnect = function() {
     }
 };
 
-function sendName() {
+/*function sendName() {
     stompClient.send("/app/hello", {}, JSON.stringify({ code: "test", message: "test" }));
-}
+}*/
 
 var updateCardItem = function (element, value) {
     var badgeSuccess = "badge-success",
@@ -113,15 +141,9 @@ var updateCardState = function(cardState) {
 };
 
 $(function () {
-    var cardState = new CardState();
     cardState.init();
 
     updateCardState(cardState);
 
     connect();
-
-    // $( "#disconnect" ).click(function() { disconnect(); });
-    setTimeout(function () {
-        sendName();
-    }, 5000);
 });
