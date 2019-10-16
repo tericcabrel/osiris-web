@@ -58,7 +58,15 @@ class WebSocketEventListener {
             };
             channel.basicConsume(Messaging.Q_CARD_REMOVED_RESPONSE, true, deliverCallback1, consumerTag -> { });
             /***********************************************************************************************************/
+            channel.queueDeclare(Messaging.Q_AUTHENTICATE_RESPONSE, false, false, false, null);
+            DeliverCallback deliverCallback2 = (consumerTag, delivery) -> {
+                String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                System.out.println(" [Q_AUTHENTICATE_RESPONSE] Received '" + content + "'");
+                message.setMessage(content);
 
+                messagingTemplate.convertAndSend("/topic/pinAuth", message);
+            };
+            channel.basicConsume(Messaging.Q_AUTHENTICATE_RESPONSE, true, deliverCallback2, consumerTag -> { });
             /***********************************************************************************************************/
             /***********************************************************************************************************/
             /***********************************************************************************************************/

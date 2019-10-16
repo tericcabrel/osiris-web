@@ -24,11 +24,12 @@
                 <div class="modal-body">
                     <div class="form-group mb-4">
                         <label for="input-pin">Enter the PIN Code:</label>
-                        <input type="text" class="form-control text-center" id="input-pin"/>
+                        <input type="number" class="form-control text-center" id="input-pin" maxlength="6" minlength="6"
+                            placeholder="6 digits code like 887570"/>
                     </div>
 
                     <div class="d-flex justify-content-center mt-3">
-                        <button class="btn btn-primary btn-sm">Validate</button>
+                        <button class="btn btn-primary btn-sm" type="button" id="btn-send-pin">Validate</button>
                     </div>
                 </div>
             </div>

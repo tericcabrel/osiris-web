@@ -29,6 +29,14 @@ var toastifyOptions = {
     onClick: function(){} // Callback after click
 };
 
+var element = {
+    pinModal: {
+        id: $("#pin-modal"),
+        input: $("#input-pin"),
+        btnPin: $("#btn-send-pin")
+    }
+};
+
 var CardState = function () {
     this.inserted = 0;
     this.authenticated = 0;
@@ -91,6 +99,33 @@ var showToast = function (message, logInConsole) {
     Toastify(toastifyOptions).showToast();
 };
 
+var updateCardItem = function (element, value) {
+    var badgeSuccess = "badge-success",
+        badgeError = "badge-danger",
+        iconSuccess = "fa-check",
+        iconError = "fa-times";
+
+    if (value === 1) {
+        element.removeClass(badgeError).addClass(badgeSuccess);
+        element.children("i").eq(0).removeClass(iconError).addClass(iconSuccess);
+    } else {
+        element.removeClass(badgeSuccess).addClass(badgeError);
+        element.children("i").eq(0).removeClass(iconSuccess).addClass(iconError);
+    }
+};
+
+var updateCardState = function(cardState) {
+    var cardInserted = $("#sd-inserted"),
+        cardLocked = $("#sd-locked"),
+        cardAuthenticated = $("#sd-auth"),
+        cardPinRemain = $("#sd-pin-remain");
+
+    updateCardItem(cardInserted, cardState.inserted);
+    updateCardItem(cardLocked, cardState.locked);
+    updateCardItem(cardAuthenticated, cardState.authenticated);
+    cardPinRemain.text(cardState.pinRemain);
+};
+
 var connect = function() {
     var socket = new SockJS('/osiris');
     stompClient = Stomp.over(socket);
@@ -122,6 +157,31 @@ var connect = function() {
                 showToast("Card inserted but failed to connect to it!", true);
             }
         });
+
+        stompClient.subscribe('/topic/pinAuth', function (data) {
+            var message = getBody(data);
+            if (message === cardEvent.successCode) {
+                cardState.authenticated = 1;
+                cardState.save();
+                updateCardState(cardState);
+
+                showToast("Success: Valid PIN Code");
+                element.pinModal.id.modal('hide');
+                element.pinModal.input.val('');
+            } else {
+                cardState.pinRemain--;
+
+                if (cardState.pinRemain <= 0) {
+                    showToast("The card is locked!", true);
+                    cardState.authenticated = 1;
+                    cardState.locked = 1;
+                } else {
+                    showToast(messageCodes[message] + ": Attempt remaining = " + cardState.pinRemain, true);
+                }
+                cardState.save();
+                updateCardState(cardState);
+            }
+        });
     });
 };
 
@@ -131,41 +191,26 @@ var disconnect = function() {
     }
 };
 
-/*function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({ code: "test", message: "test" }));
-}*/
-
-var updateCardItem = function (element, value) {
-    var badgeSuccess = "badge-success",
-        badgeError = "badge-danger",
-        iconSuccess = "fa-check",
-        iconError = "fa-times";
-
-    if (value === 1) {
-        element.removeClass(badgeError).addClass(badgeSuccess);
-        element.children("i").eq(0).removeClass(iconError).addClass(iconSuccess);
-    } else {
-        element.removeClass(badgeSuccess).addClass(badgeError);
-        element.children("i").eq(0).removeClass(iconSuccess).addClass(iconError);
-    }
-};
-
-var updateCardState = function(cardState) {
-    var cardInserted = $("#sd-inserted"),
-        cardLocked = $("#sd-locked"),
-        cardAuthenticated = $("#sd-auth"),
-        cardPinRemain = $("#sd-pin-remain");
-
-    updateCardItem(cardInserted, cardState.inserted);
-    updateCardItem(cardLocked, cardState.locked);
-    updateCardItem(cardAuthenticated, cardState.authenticated);
-    cardPinRemain.text(cardState.pinRemain);
-};
-
 $(function () {
     cardState.init();
 
     updateCardState(cardState);
 
     connect();
+
+    element.pinModal.btnPin.click(function (e) {
+        e.preventDefault();
+
+        if (cardState.pinRemain === 0) {
+            showToast("The card is locked !");
+            return;
+        }
+
+        var pinCode = element.pinModal.input.val();
+        if (pinCode.length !== 6) {
+            return;
+        }
+
+        stompClient.send("/app/pinAuthentication", {}, JSON.stringify({ code: "pin", message: pinCode }));
+    })
 });
