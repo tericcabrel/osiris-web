@@ -12,7 +12,7 @@ public class UserRegistrationDto {
     @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Invalid date of birth")
     private String birthDate;
 
-    @NotBlank(message = "The name is required")
+    // @NotBlank(message = "The name is required")
     private String finger;
 
     public String getUid() {

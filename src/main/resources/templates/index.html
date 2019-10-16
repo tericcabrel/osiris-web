@@ -40,49 +40,19 @@
                                 <th scope="col" style="width: 30%">Name</th>
                                 <th scope="col">Birth Date</th>
                                 <th scope="col">Fingerprint</th>
-                                <th scope="col">Create Date</th>
+                                <!--/*<th scope="col">Create Date</th> */-->
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>yuertyuetrew</td>
-                                <td>Danis Termius</td>
-                                <td>5991-03-23</td>
-                                <td><span class="badge badge-success">Yes</span></td>
-                                <td>5991-03-23 13:23:45</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">2</th>
-                                <td>yuertyuetrew</td>
-                                <td>Danis Termius</td>
-                                <td>5991-03-23</td>
-                                <td><span class="badge badge-danger">No</span></td>
-                                <td>5991-03-23 13:23:45</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>yuertyuetrew</td>
-                                <td>Danis Termius</td>
-                                <td>5991-03-23</td>
-                                <td><span class="badge badge-success">Yes</span></td>
-                                <td>5991-03-23 13:23:45</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>yuertyuetrew</td>
-                                <td>Danis Termius</td>
-                                <td>5991-03-23</td>
-                                <td><span class="badge badge-success">Yes</span></td>
-                                <td>5991-03-23 13:23:45</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td>yuertyuetrew</td>
-                                <td>Danis Termius</td>
-                                <td>5991-03-23</td>
-                                <td><span class="badge badge-danger">No</span></td>
-                                <td>5991-03-23 13:23:45</td>
+                            <tr th:each="user,stat : ${users}">
+                                <th scope="row" th:text="${stat.count}">1</th>
+                                <td th:text="${user.uid}">uid</td>
+                                <td th:text="${user.name}">name</td>
+                                <td th:text="${user.birthDate}">5991-03-23</td>
+                                <td th:utext='${user.finger == null ? "Yes" : "No"}'>
+                                    <span class="badge badge-danger">No</span>
+                                </td>
+                                <!--/*<td th:text="${#dates.format(user.createdAt, 'dd/MMM/yyyy HH:mm')}">1970-01-01 00:00:00</td>*/-->
                             </tr>
                         </tbody>
                     </table>
