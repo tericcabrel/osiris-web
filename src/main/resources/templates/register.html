@@ -47,8 +47,7 @@
 
                         <div class="form-group mb-4" th:classappend="${#fields.hasErrors('name')}? 'has-error':''">
                             <label for="name">User Name:</label>
-                            <input class="form-control" type="name" name="name" id="name" placeholder="Ex: John DOE"
-                                   th:field="*{name}"/>
+                            <input class="form-control" type="text" name="name" id="name" placeholder="Ex: John DOE" th:field="*{name}"/>
                             <p class="invalid-feedback" th:each="error : ${#fields.errors('name')}" th:text="${error}">
                                 Validation error
                             </p>
@@ -73,22 +72,18 @@
                 </div>
                 <hr/>
                 <div class="form-group pt-2 d-flex justify-content-between">
-                    <button class="btn btn-primary btn-sm" type="submit">Register</button>
-                    <button class="btn btn-primary btn-sm" type="button">Get Fingerprint</button>
+                    <button class="btn btn-primary btn-sm" type="button" id="btn-save-card">Save in card</button>
+                    <button class="btn btn-success btn-sm" type="submit" id="btn-save-db">Save in database</button>
+                    <button class="btn btn-primary btn-sm" type="button" id="btn-get-finger">Get Fingerprint</button>
                 </div>
             </div>
         </div>
     </form>
 
-
-    <script th:src="@{/assets/vendor/datepicker/moment.js}"></script>
-    <script th:src="@{/assets/vendor/datepicker/tempusdominus-bootstrap-4.js}"></script>
-    <script type="text/javascript">
-        $(function () {
-            $('#birth').datetimepicker({
-                format: 'YYYY-MM-DD'
-            });
-        });
-    </script>
+    <div layout:fragment="scripts">
+        <script th:src="@{/assets/vendor/datepicker/moment.js}"></script>
+        <script th:src="@{/assets/vendor/datepicker/tempusdominus-bootstrap-4.js}"></script>
+        <script th:src="@{/assets/js/register.js}"></script>
+    </div>
 </body>
 </html>

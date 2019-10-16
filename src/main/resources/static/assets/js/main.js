@@ -203,6 +203,15 @@ var connect = function() {
                 showToast("An error occurred ! Try again later");
             }
         });
+
+        stompClient.subscribe('/topic/cardSetData', function (data) {
+            var message = getBody(data);
+            if (message === cardEvent.successCode) {
+                showToast("Data saved successfully in the card!");
+            } else {
+                showToast("An error occurred ! Try again later");
+            }
+        });
     });
 };
 

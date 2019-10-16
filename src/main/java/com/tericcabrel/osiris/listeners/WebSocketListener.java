@@ -78,6 +78,15 @@ class WebSocketEventListener {
             };
             channel.basicConsume(Messaging.Q_UNBLOCK_RESPONSE, true, deliverCallback3, consumerTag -> { });
             /***********************************************************************************************************/
+            channel.queueDeclare(Messaging.Q_SET_DATA_RESPONSE, false, false, false, null);
+            DeliverCallback deliverCallback4 = (consumerTag, delivery) -> {
+                String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                System.out.println(" [Q_SET_DATA_RESPONSE] Received '" + content + "'");
+                message.setMessage(content);
+
+                messagingTemplate.convertAndSend("/topic/cardSetData", message);
+            };
+            channel.basicConsume(Messaging.Q_SET_DATA_RESPONSE, true, deliverCallback4, consumerTag -> { });
             /***********************************************************************************************************/
             /***********************************************************************************************************/
             /***********************************************************************************************************/

@@ -38,4 +38,13 @@ public class SocketController {
         channel.basicPublish("", Messaging.Q_UNBLOCK_REQUEST, null, message.getMessage().getBytes(StandardCharsets.UTF_8));
         System.out.println(" [x] Sent to queue " + Messaging.Q_UNBLOCK_REQUEST);
     }
+
+    @MessageMapping("/cardSetData")
+    public void cardSetData(SocketMessage message) throws Exception {
+        Channel channel = Messaging.getChannel();
+
+        channel.queueDeclare(Messaging.Q_SET_DATA_REQUEST, false, false, false, null);
+        channel.basicPublish("", Messaging.Q_SET_DATA_REQUEST, null, message.getMessage().getBytes(StandardCharsets.UTF_8));
+        System.out.println(" [x] Sent to queue " + Messaging.Q_SET_DATA_REQUEST);
+    }
 }
