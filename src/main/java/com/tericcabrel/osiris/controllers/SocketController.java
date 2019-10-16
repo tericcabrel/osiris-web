@@ -47,4 +47,13 @@ public class SocketController {
         channel.basicPublish("", Messaging.Q_SET_DATA_REQUEST, null, message.getMessage().getBytes(StandardCharsets.UTF_8));
         System.out.println(" [x] Sent to queue " + Messaging.Q_SET_DATA_REQUEST);
     }
+
+    @MessageMapping("/cardGetData")
+    public void cardGetData(SocketMessage message) throws Exception {
+        Channel channel = Messaging.getChannel();
+
+        channel.queueDeclare(Messaging.Q_GET_DATA_REQUEST, false, false, false, null);
+        channel.basicPublish("", Messaging.Q_GET_DATA_REQUEST, null, message.getMessage().getBytes(StandardCharsets.UTF_8));
+        System.out.println(" [x] Sent to queue " + Messaging.Q_GET_DATA_REQUEST);
+    }
 }

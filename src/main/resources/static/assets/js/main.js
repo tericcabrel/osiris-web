@@ -3,7 +3,8 @@ var stompClient = null;
 var cardEvent = {
     successCode: "36864",
     cardSelected: "36865",
-    cardRemoved: "14000"
+    cardRemoved: "14000",
+    cardLocked: "27010"
 };
 
 var messageCodes = {
@@ -30,6 +31,10 @@ var toastifyOptions = {
 };
 
 var element = {
+    sidebar: {
+      btnViewCard: $("#btn-view-card-info"),
+      btnBiometricAuth: $("#btn-biometric-auth")
+    },
     pinModal: {
         id: $("#pin-modal"),
         input: $("#input-pin"),
@@ -38,7 +43,14 @@ var element = {
     userModal: {
         id: $("#user-modal"),
         btnReset: $("#btn-reset"),
-        btnUnblock: $("#btn-unblock")
+        btnUnblock: $("#btn-unblock"),
+        info: {
+            cardUid: $("#card-uid"),
+            cardName: $("#card-name"),
+            cardBirth: $("#card-birth"),
+            btnUpdateName: $("#btn-update-name"),
+            btnUpdateBirth: $("#btn-update-birth")
+        }
     }
 };
 
@@ -212,6 +224,20 @@ var connect = function() {
                 showToast("An error occurred ! Try again later");
             }
         });
+
+        stompClient.subscribe('/topic/cardGetData', function (data) {
+            var message = getBody(data);
+            var array = message.split('|');
+            if (array.length === 3) {
+                element.userModal.info.cardUid.text(array[0]);
+                element.userModal.info.cardName.val(array[1]);
+                element.userModal.info.cardBirth.val(array[2]);
+            } else if (message === cardEvent.cardLocked) {
+                showToast("The card is locked!");
+            } else {
+                showToast("An error occurred with code: " + message);
+            }
+        });
     });
 };
 
@@ -257,4 +283,15 @@ $(function () {
             }
         });
     });
+
+    element.sidebar.btnViewCard.click(function (e) {
+        e.preventDefault();
+
+        if (cardState.locked === 1) {
+            showToast("The card is locked !");
+            return;
+        }
+
+        stompClient.send("/app/cardGetData", {}, JSON.stringify({ code: "pin", message: 'getData' }));
+    })
 });
