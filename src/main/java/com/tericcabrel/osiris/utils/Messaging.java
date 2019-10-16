@@ -1,5 +1,12 @@
 package com.tericcabrel.osiris.utils;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+import java.io.IOException;
+import java.util.concurrent.TimeoutException;
+
 public class Messaging {
     public final static String Q_APPLET_SELECTED_RESPONSE = "Q_APPLET_SELECTED_RESPONSE";
     public final static String Q_CARD_REMOVED_RESPONSE = "Q_CARD_REMOVED_RESPONSE";
@@ -53,4 +60,47 @@ public class Messaging {
     public final static String SW_VERIFICATION_FAILED = "25344";
     // Signal the PIN validation is required for an action
     public final static String SW_PIN_VERIFICATION_REQUIRED = "25345";
+
+    private static Connection connection;
+    private static Channel channel;
+
+    public static Connection getConnection() {
+        if (connection != null) {
+            return connection;
+        }
+
+        // Connection to RabbitMQ
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        factory.setPort(5672);
+        factory.setUsername("guest");
+        factory.setPassword("guest");
+
+        try {
+            Connection connection = factory.newConnection();
+            System.out.println(" Connected successfully to RabbitMQ Server");
+
+            channel = connection.createChannel();
+        }catch (TimeoutException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return connection;
+    }
+
+    public static Channel getChannel() {
+        if (channel != null) {
+            return channel;
+        }
+
+        if (connection != null) {
+            try {
+                return getConnection().createChannel();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return channel;
+    }
 }
