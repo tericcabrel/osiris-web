@@ -221,7 +221,7 @@ var connect = function() {
             if (message === cardEvent.successCode) {
                 showToast("Data saved successfully in the card!");
             } else {
-                showToast("An error occurred ! Try again later");
+                showToast("An error occurred with code: "+ message + " ! Try again later");
             }
         });
 
@@ -236,6 +236,26 @@ var connect = function() {
                 showToast("The card is locked!");
             } else {
                 showToast("An error occurred with code: " + message);
+            }
+        });
+
+        stompClient.subscribe('/topic/cardSetName', function (data) {
+            var message = getBody(data);
+            if (message === cardEvent.successCode) {
+                showToast("Name updated successfully !");
+                // TODO Send request to update in the database
+            } else {
+                showToast("An error occurred with code: "+ message + " ! Try again later");
+            }
+        });
+
+        stompClient.subscribe('/topic/cardSetBirth', function (data) {
+            var message = getBody(data);
+            if (message === cardEvent.successCode) {
+                showToast("Birth data updated successfully !");
+                // TODO Send request to update in the database
+            } else {
+                showToast("An error occurred with code: "+ message + " ! Try again later");
             }
         });
     });
@@ -292,6 +312,32 @@ $(function () {
             return;
         }
 
-        stompClient.send("/app/cardGetData", {}, JSON.stringify({ code: "pin", message: 'getData' }));
-    })
+        stompClient.send("/app/cardGetData", {}, JSON.stringify({ code: "get", message: 'getData' }));
+    });
+
+    element.userModal.info.btnUpdateName.click(function (e) {
+        e.preventDefault();
+
+        var name = element.userModal.info.cardName.val();
+
+        if (name.length === 1) {
+            showToast("The field cannot be empty !");
+            return;
+        }
+
+        stompClient.send("/app/cardSetName", {}, JSON.stringify({ code: "set", message: name }));
+    });
+
+    element.userModal.info.btnUpdateBirth.click(function (e) {
+        e.preventDefault();
+
+        var birth = element.userModal.info.cardBirth.val();
+
+        if (birth.length === 1) {
+            showToast("The field cannot be empty !");
+            return;
+        }
+
+        stompClient.send("/app/cardSetBirth", {}, JSON.stringify({ code: "set", message: birth }));
+    });
 });

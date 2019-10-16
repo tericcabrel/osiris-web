@@ -98,7 +98,25 @@ class WebSocketEventListener {
             };
             channel.basicConsume(Messaging.Q_GET_DATA_RESPONSE, true, deliverCallback5, consumerTag -> { });
             /***********************************************************************************************************/
+            channel.queueDeclare(Messaging.Q_SET_NAME_RESPONSE, false, false, false, null);
+            DeliverCallback deliverCallback6 = (consumerTag, delivery) -> {
+                String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                System.out.println(" [Q_SET_NAME_RESPONSE] Received '" + content + "'");
+                message.setMessage(content);
+
+                messagingTemplate.convertAndSend("/topic/cardSetName", message);
+            };
+            channel.basicConsume(Messaging.Q_SET_NAME_RESPONSE, true, deliverCallback6, consumerTag -> { });
             /***********************************************************************************************************/
+            channel.queueDeclare(Messaging.Q_SET_BIRTH_DATE_RESPONSE, false, false, false, null);
+            DeliverCallback deliverCallback7 = (consumerTag, delivery) -> {
+                String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                System.out.println(" [Q_SET_BIRTH_DATE_RESPONSE] Received '" + content + "'");
+                message.setMessage(content);
+
+                messagingTemplate.convertAndSend("/topic/cardSetBirth", message);
+            };
+            channel.basicConsume(Messaging.Q_SET_BIRTH_DATE_RESPONSE, true, deliverCallback7, consumerTag -> { });
             /***********************************************************************************************************/
             /***********************************************************************************************************/
             /***********************************************************************************************************/
