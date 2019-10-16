@@ -34,6 +34,11 @@ var element = {
         id: $("#pin-modal"),
         input: $("#input-pin"),
         btnPin: $("#btn-send-pin")
+    },
+    userModal: {
+        id: $("#user-modal"),
+        btnReset: $("#btn-reset"),
+        btnUnblock: $("#btn-unblock")
     }
 };
 
@@ -173,13 +178,29 @@ var connect = function() {
 
                 if (cardState.pinRemain <= 0) {
                     showToast("The card is locked!", true);
-                    cardState.authenticated = 1;
+                    cardState.authenticated = 0;
                     cardState.locked = 1;
                 } else {
                     showToast(messageCodes[message] + ": Attempt remaining = " + cardState.pinRemain, true);
                 }
                 cardState.save();
                 updateCardState(cardState);
+            }
+        });
+
+        stompClient.subscribe('/topic/cardUnblock', function (data) {
+            var message = getBody(data);
+            if (message === cardEvent.successCode) {
+                cardState.locked = 0;
+                cardState.pinRemain = 3;
+                cardState.authenticated = 0;
+                cardState.save();
+                updateCardState(cardState);
+
+                showToast("The card has been unblocked successfully!");
+                element.userModal.id.modal('hide');
+            } else {
+                showToast("An error occurred ! Try again later");
             }
         });
     });
@@ -212,5 +233,19 @@ $(function () {
         }
 
         stompClient.send("/app/pinAuthentication", {}, JSON.stringify({ code: "pin", message: pinCode }));
-    })
+    });
+
+    element.userModal.btnUnblock.click(function (e) {
+        e.preventDefault();
+
+        bootbox.confirm({
+            title: "Card Unblock",
+            message: "Are you sure you want to unblock the card?",
+            callback: function (result) {
+                if (result) {
+                    stompClient.send("/app/cardUnblock", {}, JSON.stringify({ code: "unblock", message: "unblock" }));
+                }
+            }
+        });
+    });
 });

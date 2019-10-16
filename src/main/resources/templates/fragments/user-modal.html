@@ -9,7 +9,9 @@
 <body>
     <div th:fragment="umodal"
          class="modal fade"
-         tabindex="-1" role="dialog" id="user-modal"
+         tabindex="-1"
+         role="dialog"
+         id="user-modal"
          aria-labelledby="userModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -25,20 +27,17 @@
                         <div class="">ACTION: </div>
                         <ul>
                             <li>
-                                <button class="btn btn-danger">
-                                    RESET <i class="fas fa-upload"></i>
+                                <button class="btn btn-danger btn-sm" id="btn-reset">
+                                    <i class="fas fa-upload"></i> Reset
                                 </button>
                             </li>
                             <li>
-                                <button class="btn btn-success">
-                                    UNBLOCK <i class="fas fa-unlock"></i>
+                                <button class="btn btn-success btn-sm" id="btn-unblock">
+                                    <i class="fas fa-unlock"></i> Unblock
                                 </button>
                             </li>
                         </ul>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <a href="#" class="btn btn-secondary" data-dismiss="modal">Close</a>
                 </div>
             </div>
         </div>

@@ -68,6 +68,15 @@ class WebSocketEventListener {
             };
             channel.basicConsume(Messaging.Q_AUTHENTICATE_RESPONSE, true, deliverCallback2, consumerTag -> { });
             /***********************************************************************************************************/
+            channel.queueDeclare(Messaging.Q_UNBLOCK_RESPONSE, false, false, false, null);
+            DeliverCallback deliverCallback3 = (consumerTag, delivery) -> {
+                String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                System.out.println(" [Q_UNBLOCK_RESPONSE] Received '" + content + "'");
+                message.setMessage(content);
+
+                messagingTemplate.convertAndSend("/topic/cardUnblock", message);
+            };
+            channel.basicConsume(Messaging.Q_UNBLOCK_RESPONSE, true, deliverCallback3, consumerTag -> { });
             /***********************************************************************************************************/
             /***********************************************************************************************************/
             /***********************************************************************************************************/
