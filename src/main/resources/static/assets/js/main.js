@@ -4,7 +4,8 @@ var cardEvent = {
     successCode: "36864",
     cardSelected: "36865",
     cardRemoved: "14000",
-    cardLocked: "27010"
+    cardLocked: "27010",
+    pinRequired: "25345"
 };
 
 var messageCodes = {
@@ -258,6 +259,23 @@ var connect = function() {
                 showToast("An error occurred with code: "+ message + " ! Try again later");
             }
         });
+
+        stompClient.subscribe('/topic/cardReset', function (data) {
+            var message = getBody(data);
+
+            if (message === cardEvent.successCode) {
+                showToast("Card resetted successfully!");
+                element.userModal.info.cardUid.text('');
+                element.userModal.info.cardName.val('');
+                element.userModal.info.cardBirth.val(moment().format('YYYY-MM-DD'));
+            } else if (message === cardEvent.cardLocked) {
+                showToast(messageCodes[message]);
+            } else if (message === cardEvent.pinRequired) {
+                showToast(messageCodes[message]);
+            } else {
+                showToast("An error occurred with code: " + message);
+            }
+        });
     });
 };
 
@@ -339,5 +357,21 @@ $(function () {
         }
 
         stompClient.send("/app/cardSetBirth", {}, JSON.stringify({ code: "set", message: birth }));
+    });
+
+    element.userModal.btnReset.click(function (e) {
+       e.preventDefault();
+
+        if (cardState.locked === 1) {
+            showToast('The card is locked !');
+            return;
+        }
+
+       if (cardState.authenticated === 0) {
+           showToast('This action required to be authenticated!');
+           return;
+       }
+
+        stompClient.send("/app/cardReset", {}, JSON.stringify({ code: "reset", message: "reset" }));
     });
 });

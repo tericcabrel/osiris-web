@@ -74,4 +74,13 @@ public class SocketController {
         channel.basicPublish("", Messaging.Q_SET_BIRTH_DATE_REQUEST, null, message.getMessage().getBytes(StandardCharsets.UTF_8));
         System.out.println(" [x] Sent to queue " + Messaging.Q_SET_BIRTH_DATE_REQUEST);
     }
+
+    @MessageMapping("/cardReset")
+    public void cardReset(SocketMessage message) throws Exception {
+        Channel channel = Messaging.getChannel();
+
+        channel.queueDeclare(Messaging.Q_RESET_REQUEST, false, false, false, null);
+        channel.basicPublish("", Messaging.Q_RESET_REQUEST, null, message.getMessage().getBytes(StandardCharsets.UTF_8));
+        System.out.println(" [x] Sent to queue " + Messaging.Q_RESET_REQUEST);
+    }
 }

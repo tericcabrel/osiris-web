@@ -118,6 +118,15 @@ class WebSocketEventListener {
             };
             channel.basicConsume(Messaging.Q_SET_BIRTH_DATE_RESPONSE, true, deliverCallback7, consumerTag -> { });
             /***********************************************************************************************************/
+            channel.queueDeclare(Messaging.Q_RESET_RESPONSE, false, false, false, null);
+            DeliverCallback deliverCallback8 = (consumerTag, delivery) -> {
+                String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                System.out.println(" [Q_RESET_RESPONSE] Received '" + content + "'");
+                message.setMessage(content);
+
+                messagingTemplate.convertAndSend("/topic/cardReset", message);
+            };
+            channel.basicConsume(Messaging.Q_RESET_RESPONSE, true, deliverCallback8, consumerTag -> { });
             /***********************************************************************************************************/
             /***********************************************************************************************************/
         } catch (IOException e) {
