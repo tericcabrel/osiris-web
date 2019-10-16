@@ -6,7 +6,7 @@ var cardEvent = {
     cardRemoved: "14000"
 };
 
-var errorCodes = {
+var messageCodes = {
     "36864": "Executed successfully!",
     "36865": "A card inserted !",
     "14000": "The card has been removed",
@@ -14,6 +14,19 @@ var errorCodes = {
     "25344": "Invalid PIN Code",
     "25345": "Authentication with PIN Code is required!",
     "27010": "The card is locked!"
+};
+
+var toastifyOptions = {
+    text: "",
+    duration: 5000,
+    newWindow: true,
+    close: true,
+    className: "osiris-toast",
+    gravity: "top", // `top` or `bottom`
+    position: 'center', // `left`, `center` or `right`
+    // backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    onClick: function(){} // Callback after click
 };
 
 var CardState = function () {
@@ -69,6 +82,15 @@ var getBody = function (data) {
     return body.message;
 };
 
+var showToast = function (message, logInConsole) {
+    if (logInConsole !== undefined) {
+        console.log(message);
+    }
+
+    toastifyOptions.text = message;
+    Toastify(toastifyOptions).showToast();
+};
+
 var connect = function() {
     var socket = new SockJS('/osiris');
     stompClient = Stomp.over(socket);
@@ -83,9 +105,9 @@ var connect = function() {
                 cardState.save();
                 updateCardState(cardState);
 
-                // TODO add Toast
+                showToast(messageCodes[message]);
             } else {
-                console.error("Card inserted but failed to connect to it!");
+                showToast("Card inserted but failed to connect to it!", true);
             }
         });
 
@@ -95,9 +117,9 @@ var connect = function() {
                 cardState.reset();
                 updateCardState(cardState);
 
-                // TODO add Toast
+                showToast(messageCodes[message]);
             } else {
-                console.error("Card inserted but failed to connect to it!");
+                showToast("Card inserted but failed to connect to it!", true);
             }
         });
     });
