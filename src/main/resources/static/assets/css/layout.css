@@ -25,3 +25,17 @@
     align-items: center;
     justify-content: center;
 }
+
+#fingerprint-modal #finger-result {
+    width: 200px;
+    height: 200px;
+}
+#fingerprint-modal #finger-result i {
+    font-size: 36px;
+}
+#fingerprint-modal #finger-result .hidden {
+    display: none;
+}
+#fingerprint-modal #welcome-message {
+    font-size: 20px;
+}

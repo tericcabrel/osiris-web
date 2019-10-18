@@ -138,6 +138,15 @@ class WebSocketEventListener {
             };
             channel.basicConsume(Messaging.Q_ENROLL_RESPONSE, true, deliverCallback9, consumerTag -> { });
             /***********************************************************************************************************/
+            channel.queueDeclare(Messaging.Q_VERIFY_USER_RESPONSE, false, false, false, null);
+            DeliverCallback deliverCallback10 = (consumerTag, delivery) -> {
+                String content = new String(delivery.getBody(), StandardCharsets.UTF_8);
+                System.out.println(" [Q_VERIFY_USER_RESPONSE] Received '" + content + "'");
+                message.setMessage(content);
+
+                messagingTemplate.convertAndSend("/topic/authFingerprint", message);
+            };
+            channel.basicConsume(Messaging.Q_VERIFY_USER_RESPONSE, true, deliverCallback10, consumerTag -> { });
         } catch (IOException e) {
             e.printStackTrace();
         }

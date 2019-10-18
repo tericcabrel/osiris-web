@@ -76,6 +76,14 @@ var element = {
             btnSaveCard: $("#btn-save-card"),
             btnFingerprint: $("#btn-get-finger")
         }
+    },
+    fingerprintModal: {
+        id: $("#fingerprint-modal"),
+        resultBox: $("#finger-result"),
+        failedIcon: $("#auth-failed"),
+        successIcon: $("#auth-success"),
+        welcomeMessage: $("#welcome-message"),
+        btnAuth: $("#btn-auth-fingerprint")
     }
 };
 
@@ -310,6 +318,22 @@ var connect = function() {
                 showToast(messageCodes[message] ? messageCodes[message] : "An error occurred with code: "+ message + "! Try again later");
             }
         });
+
+        stompClient.subscribe('/topic/authFingerprint', function (data) {
+            var message = getBody(data);
+            var array = message.split('|');
+            if (array.length === 4) {
+                element.fingerprintModal.resultBox.removeClass('badge-light').addClass('badge-success');
+                element.fingerprintModal.failedIcon.addClass('hidden');
+                element.fingerprintModal.successIcon.removeClass('hidden');
+                element.fingerprintModal.welcomeMessage.html('Welcome <b>'+array[1]+'</b>');
+            } else {
+                // showToast("An error occurred with code: " + message);
+                element.fingerprintModal.resultBox.removeClass('badge-light').addClass('badge-danger');
+                element.fingerprintModal.failedIcon.removeClass('hidden');
+                element.fingerprintModal.successIcon.addClass('hidden');
+            }
+        });
     });
 };
 
@@ -407,5 +431,14 @@ $(function () {
        }
 
         stompClient.send("/app/cardReset", {}, JSON.stringify({ code: "reset", message: "reset" }));
+    });
+
+    element.fingerprintModal.btnAuth.click(function (e) {
+        e.preventDefault();
+
+        element.fingerprintModal.resultBox.removeClass('badge-success', 'badge-danger').addClass('badge-light');
+        element.fingerprintModal.welcomeMessage.empty();
+
+        stompClient.send("/app/authFingerprint", {}, JSON.stringify({ code: "authFinger", message: "authFinger" }));
     });
 });
