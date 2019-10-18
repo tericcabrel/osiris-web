@@ -323,13 +323,13 @@ var connect = function() {
             var message = getBody(data);
             var array = message.split('|');
             if (array.length === 4) {
-                element.fingerprintModal.resultBox.removeClass('badge-light').addClass('badge-success');
+                element.fingerprintModal.resultBox.removeClass('badge-light badge-danger').addClass('badge-success');
                 element.fingerprintModal.failedIcon.addClass('hidden');
                 element.fingerprintModal.successIcon.removeClass('hidden');
                 element.fingerprintModal.welcomeMessage.html('Welcome <b>'+array[1]+'</b>');
             } else {
                 // showToast("An error occurred with code: " + message);
-                element.fingerprintModal.resultBox.removeClass('badge-light').addClass('badge-danger');
+                element.fingerprintModal.resultBox.removeClass('badge-light badge-success').addClass('badge-danger');
                 element.fingerprintModal.failedIcon.removeClass('hidden');
                 element.fingerprintModal.successIcon.addClass('hidden');
             }
@@ -436,7 +436,9 @@ $(function () {
     element.fingerprintModal.btnAuth.click(function (e) {
         e.preventDefault();
 
-        element.fingerprintModal.resultBox.removeClass('badge-success', 'badge-danger').addClass('badge-light');
+        element.fingerprintModal.resultBox.removeClass('badge-success badge-danger').addClass('badge-light');
+        element.fingerprintModal.failedIcon.addClass('hidden');
+        element.fingerprintModal.successIcon.addClass('hidden');
         element.fingerprintModal.welcomeMessage.empty();
 
         stompClient.send("/app/authFingerprint", {}, JSON.stringify({ code: "authFinger", message: "authFinger" }));

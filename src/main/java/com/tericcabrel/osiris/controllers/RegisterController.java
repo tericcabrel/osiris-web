@@ -2,6 +2,7 @@ package com.tericcabrel.osiris.controllers;
 
 import javax.validation.Valid;
 
+import com.tericcabrel.osiris.configs.FileStorageProperties;
 import com.tericcabrel.osiris.dtos.UserRegistrationDto;
 import com.tericcabrel.osiris.utils.Helpers;
 import com.tericcabrel.osiris.models.User;
@@ -14,13 +15,21 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Controller
 @RequestMapping("/register")
 public class RegisterController {
+    private FileStorageProperties fileStorageProperties;
+
     private UserService userService;
 
-    public RegisterController(UserService userService) {
+    public RegisterController(UserService userService, FileStorageProperties fileStorageProperties
+    ) {
         this.userService = userService;
+        this.fileStorageProperties = fileStorageProperties;
     }
 
     @ModelAttribute("user")
@@ -50,6 +59,13 @@ public class RegisterController {
 
         if (result.hasErrors()) {
             return "register";
+        }
+
+        Path fileStorageLocation = Paths.get(this.fileStorageProperties.getUploadDir() + "\\" + userDto.getUid())
+                .toAbsolutePath().normalize();
+
+        if(Files.exists(fileStorageLocation)) {
+            userDto.setFinger("yes");
         }
 
         userService.save(userDto);
