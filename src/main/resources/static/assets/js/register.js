@@ -28,4 +28,17 @@ $(function () {
 
         stompClient.send("/app/cardSetData", {}, JSON.stringify({ code: "unblock", message: content }));
     });
+
+    registerElement.form.btnFingerprint.click(function (e) {
+        e.preventDefault();
+
+        var uid = registerElement.form.uid.val();
+
+        if (uid.length === 0) {
+            showToast("All the field are required");
+            return;
+        }
+
+        stompClient.send("/app/enrollment", {}, JSON.stringify({ code: "enrollment", message: uid }));
+    });
 });

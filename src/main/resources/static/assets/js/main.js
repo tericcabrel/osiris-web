@@ -229,7 +229,7 @@ var connect = function() {
         stompClient.subscribe('/topic/cardGetData', function (data) {
             var message = getBody(data);
             var array = message.split('|');
-            if (array.length === 3) {
+            if (array.length === 4) {
                 element.userModal.info.cardUid.text(array[0]);
                 element.userModal.info.cardName.val(array[1]);
                 element.userModal.info.cardBirth.val(array[2]);
@@ -274,6 +274,15 @@ var connect = function() {
                 showToast(messageCodes[message]);
             } else {
                 showToast("An error occurred with code: " + message);
+            }
+        });
+
+        stompClient.subscribe('/topic/enrollment', function (data) {
+            var message = getBody(data);
+            if (message === cardEvent.successCode) {
+                showToast("Fingerprint registered successfully !");
+            } else {
+                showToast("An error occurred with code: "+ message + "! Try again later");
             }
         });
     });
