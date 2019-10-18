@@ -10,10 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @RestController
 public class FingerprintController {
@@ -37,15 +34,11 @@ public class FingerprintController {
         return new Response(fileName, picture.getContentType(), picture.getSize());
     }
 
-    @RequestMapping(value = "/sid", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
-
-    public void getImage(HttpServletResponse response) throws IOException {
-        /*Path fileStorageLocation = Paths.get(this.fileStorageProperties.getUploadDir() + "\\" + uid)
-                .toAbsolutePath().normalize();
-
-        File imgFile = new File(fileStorageLocation.resolve(uid + ".png"));
+    @RequestMapping(value = "/picture", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+    public void getImage(@RequestParam(name = "uid") String uid, HttpServletResponse response) throws IOException {
+        ClassPathResource imgFile = new ClassPathResource("uploads/" + uid + "/" + (uid + ".png").toString());
 
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
-        StreamUtils.copy(imgFile.getInputStream(), response.getOutputStream());*/
+        StreamUtils.copy(imgFile.getInputStream(), response.getOutputStream());
     }
 }
