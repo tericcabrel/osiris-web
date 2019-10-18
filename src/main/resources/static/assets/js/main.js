@@ -8,6 +8,14 @@ var cardEvent = {
     pinRequired: "25345"
 };
 
+var biometricEvent = {
+    successCode: "12500",
+    uploadFailed: "12400",
+    captureFailed: "12300",
+    noScannerAvailable: "12200",
+    sdkNotInitialized: "12100"
+};
+
 var messageCodes = {
     "36864": "Executed successfully!",
     "36865": "A card inserted !",
@@ -15,7 +23,12 @@ var messageCodes = {
     "15000": "Card Internal error",
     "25344": "Invalid PIN Code",
     "25345": "Authentication with PIN Code is required!",
-    "27010": "The card is locked!"
+    "27010": "The card is locked!",
+    "12100": "Library is not initialized",
+    "12200": "No fingerprint scanner found",
+    "12300": "Fingerprint capture failed",
+    "12400": "Failed to send the file ont the server",
+    "12500": "Fingerprint registered successfully !"
 };
 
 var toastifyOptions = {
@@ -51,6 +64,17 @@ var element = {
             cardBirth: $("#card-birth"),
             btnUpdateName: $("#btn-update-name"),
             btnUpdateBirth: $("#btn-update-birth")
+        }
+    },
+    register: {
+        form: {
+            uid: $("#uid"),
+            name: $("#name"),
+            birth: $("#birth"),
+            finger: $("#finger"),
+            fingerImg: $("#finger-img"),
+            btnSaveCard: $("#btn-save-card"),
+            btnFingerprint: $("#btn-get-finger")
         }
     }
 };
@@ -279,10 +303,11 @@ var connect = function() {
 
         stompClient.subscribe('/topic/enrollment', function (data) {
             var message = getBody(data);
-            if (message === cardEvent.successCode) {
-                showToast("Fingerprint registered successfully !");
+            if (message === biometricEvent.successCode) {
+                showToast(messageCodes[message]);
+                element.register.form.finger.val("yes");
             } else {
-                showToast("An error occurred with code: "+ message + "! Try again later");
+                showToast(messageCodes[message] ? messageCodes[message] : "An error occurred with code: "+ message + "! Try again later");
             }
         });
     });
