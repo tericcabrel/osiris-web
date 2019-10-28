@@ -315,7 +315,8 @@ var connect = function() {
                 showToast(messageCodes[message]);
                 element.register.form.finger.val("yes");
                 var uid = element.register.form.uid.val();
-                element.register.form.fingerImg.attr('src', 'http://localhost:7000/uploads/static/' + uid + '/' + uid + '.png');
+                console.log('http://localhost:7000/uploads/static/' + uid + '/' + uid + '.bmp');
+                element.register.form.fingerImg.attr('src', 'http://localhost:7000/uploads/static/' + uid + '/' + uid + '.bmp');
             } else {
                 showToast(messageCodes[message] ? messageCodes[message] : "An error occurred with code: "+ message + "! Try again later");
             }
